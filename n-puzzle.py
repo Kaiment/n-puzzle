@@ -10,7 +10,11 @@ def main():
     for i, line in enumerate(sys.stdin):
         print(filterCommentFromLine(line))
 
-    solver.getFinalPuzzleSize(puzzleSize)
+    finalState = solver.getFinalPuzzleSize(10)
+
+    print("Goal state:")
+
+    helpers.debugPuzzle(finalState)
 
 def filterCommentFromLine(line):
     commentIndex = line.find("#")
