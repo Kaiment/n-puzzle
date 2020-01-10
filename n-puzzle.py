@@ -38,19 +38,31 @@ def filterEmptyString(array):
 
 def getPuzzle(puzzleSize):
     puzzle = [[-1 for i in range(0, puzzleSize)] for j in range(0, puzzleSize)]
+    puzzleDict = {}
     for y, line in enumerate(sys.stdin):
         line = filterCommentFromLine(line)
-        lineSplitted = line.split(" ")
-        lineSplitted = filterEmptyString(lineSplitted)
-        if (len(lineSplitted) != puzzleSize):
-            print("ERROR: Every row must strictly be of the puzzle size.")
-            sys.exit()
-        for x in range(0, puzzleSize):
-            try:
-                puzzle[y][x] = int(lineSplitted[x])
-            except ValueError:
-                print("ERROR: Each lines must be composed of unique integers ranging from 0 to [puzzle size]^2 - 1.")
+        if (line != ""):
+            lineSplitted = line.split(" ")
+            lineSplitted = filterEmptyString(lineSplitted)
+            if (len(lineSplitted) != puzzleSize):
+                print("ERROR: Every row must strictly be of the puzzle size.")
                 sys.exit()
+            for x in range(0, puzzleSize):
+                try:
+                    slot = int(lineSplitted[x])
+                    if (slot < 0 or slot > puzzleSize**2 - 1):
+                        print("ERROR: Integers values must be from 0 to [puzzle size]^2 - 1.")
+                    if (slot in puzzleDict.keys()):
+                        print("ERROR: Cell value duplicate.")
+                        sys.exit()
+                    else:
+                        puzzleDict[slot] = True
+                    puzzle[y][x] = slot
+                except ValueError:
+                    print("ERROR: Each lines must be composed of unique integers [puzzle size]^2 - 1.")
+                    sys.exit()
+    if (len(puzzle) != puzzleSize):
+        print("ERROR: There must be exactly [puzzle size] rows of integers.")
     return puzzle
 
 def getPuzzleSize():
