@@ -10,7 +10,7 @@ def main():
     for i, line in enumerate(sys.stdin):
         print(filterCommentFromLine(line))
 
-    finalState = solver.getFinalPuzzleSize(10)
+    finalState = solver.getFinalPuzzleSize(puzzleSize)
 
     print("Goal state:")
 
