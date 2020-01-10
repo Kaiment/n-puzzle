@@ -29,3 +29,26 @@ def getFinalPuzzleSize(size):
             k += 1
 
     return puzzle
+
+def isSolvable(puzzle):
+    size = len(puzzle)
+    numbers = [0] * ((size * size) - 1)
+    k = 0
+    inversions = 0
+
+    for i in range(0, size):
+        for j in range(0, size):
+            if puzzle[i][j] != 0:
+                numbers[k] = puzzle[i][j]
+                k += 1
+
+    for i in range(0, len(numbers)):
+        for j in range(0, len(numbers)):
+            if j > i and numbers[i] > numbers[j]:
+                inversions += 1
+
+    # even => not solvable
+    if inversions % 2 == 0:
+        return False
+    return True
+

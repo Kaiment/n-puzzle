@@ -7,8 +7,15 @@ def main():
     print("Puzzle size: " + str(puzzleSize))
     print("Rest of the input:")
 
+    puzzle = [[]] * puzzleSize
+
     for i, line in enumerate(sys.stdin):
-        print(filterCommentFromLine(line))
+        puzzle[i] = list(map(int, filterCommentFromLine(line).split(" ")))
+
+    helpers.debugPuzzle(puzzle)
+
+    if solver.isSolvable(puzzle) == False:
+        helpers.exit("Puzzle is not solvable")
 
     finalState = solver.getFinalPuzzleSize(puzzleSize)
 
@@ -30,12 +37,10 @@ def getPuzzleSize():
             continue
         lineSplit = line.split(" ")
         if (len(lineSplit) != 1 or not helpers.str_isInt(lineSplit[0])):
-            print("The first line must be single int representing the puzzle size.")
-            sys.exit()
+            helpers.exit("The first line must be single int representing the puzzle size.")
         puzzleSize = int(lineSplit[0])
         if (puzzleSize < 3):
-            print("The puzzle size must be at least of 3")
-            sys.exit()
+            helpers.exit("The puzzle size must be at least of 3")
         break
     if (puzzleSize == None):
         print("You must enter a puzzle size.")
