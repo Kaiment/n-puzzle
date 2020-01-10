@@ -1,3 +1,5 @@
+import sys
+
 def str_isInt(string):
     try:
         int(string)
@@ -5,9 +7,12 @@ def str_isInt(string):
     except ValueError:
         return False
 
-def debugPuzzle(puzzle):
+def exit(str):
+    print("\n" + str)
+    sys.exit()
 
+def debugPuzzle(puzzle):
     size = len(puzzle)
 
     for i in range(0, size):
-        print(' '.join(str(x).ljust(3) for x in puzzle[i]))
+        print(' '.join(str(x).ljust(2) for x in puzzle[i]))
