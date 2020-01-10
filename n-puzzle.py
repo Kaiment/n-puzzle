@@ -5,23 +5,25 @@ import solver
 def main():
     puzzleSize = getPuzzleSize()
     print("Puzzle size: " + str(puzzleSize))
-    print("Rest of the input:")
+    print("Initial state:")
 
     puzzle = [[]] * puzzleSize
 
     for i, line in enumerate(sys.stdin):
-        puzzle[i] = list(map(int, filterCommentFromLine(line).split(" ")))
+        puzzle[i] = list(map(int, filterCommentFromLine(line).split()))
 
     helpers.debugPuzzle(puzzle)
 
     if solver.isSolvable(puzzle) == False:
         helpers.exit("Puzzle is not solvable")
 
-    finalState = solver.getFinalPuzzleSize(puzzleSize)
+    finalState = solver.getFinalPuzzle(puzzleSize)
 
     print("Goal state:")
 
     helpers.debugPuzzle(finalState)
+
+    solver.startSolving(puzzle, finalState)
 
 def filterCommentFromLine(line):
     commentIndex = line.find("#")
