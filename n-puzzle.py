@@ -1,13 +1,16 @@
 import sys
 import helpers
+import solver
 
 def main():
     puzzleSize = getPuzzleSize()
     print("Puzzle size: " + str(puzzleSize))
     print("Rest of the input:")
-    for line in sys.stdin:
+
+    for i, line in enumerate(sys.stdin):
         print(filterCommentFromLine(line))
 
+    solver.getFinalPuzzleSize(puzzleSize)
 
 def filterCommentFromLine(line):
     commentIndex = line.find("#")
