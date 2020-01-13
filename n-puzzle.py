@@ -8,10 +8,10 @@ def main():
     print("Puzzle size: " + str(puzzleSize))
     print("Initial state:")
 
-    puzzle = [[]] * puzzleSize
+    puzzle = parser.getPuzzle(puzzleSize)
 
-    for i, line in enumerate(sys.stdin):
-        puzzle[i] = list(map(int, parser.filterCommentFromLine(line).split()))
+    # for i, line in enumerate(sys.stdin):
+    #     puzzle[i] = list(map(int, parser.filterCommentFromLine(line).split()))
 
     helpers.debugPuzzle(puzzle)
 
