@@ -2,33 +2,42 @@ import sys
 import helpers
 
 def getPuzzle(puzzleSize):
-    puzzle = [[-1 for i in range(0, puzzleSize)] for j in range(0, puzzleSize)]
-    puzzleDict = {}
-    for y, line in enumerate(sys.stdin):
+    puzzle = []
+    for line in sys.stdin:
         line = filterCommentFromLine(line)
         if (line != ""):
-            lineSplitted = line.split(" ")
-            lineSplitted = filterEmptyString(lineSplitted)
-            if (len(lineSplitted) != puzzleSize):
-                print("ERROR: Every row must strictly be of the puzzle size.")
-                sys.exit()
-            for x in range(0, puzzleSize):
-                try:
-                    slot = int(lineSplitted[x])
-                    if (slot < 0 or slot > puzzleSize**2 - 1):
-                        print("ERROR: Integers values must be from 0 to [puzzle size]^2 - 1.")
-                    if (slot in puzzleDict.keys()):
-                        print("ERROR: Cell value duplicate.")
-                        sys.exit()
-                    else:
-                        puzzleDict[slot] = True
-                    puzzle[y][x] = slot
-                except ValueError:
-                    print("ERROR: Each lines must be composed of unique integers [puzzle size]^2 - 1.")
-                    sys.exit()
+            lineArray = getLineArray(line, puzzleSize)
+            puzzle.append(lineArray)
     if (len(puzzle) != puzzleSize):
-        print("ERROR: There must be exactly [puzzle size] rows of integers.")
+        print("ERROR: There must be exactly PUZZLE_SIZE rows of integers.")
+        sys.exit()
     return puzzle
+
+def getLineArray(line, puzzleSize):
+    lineArray = []
+    lineSplitted = line.split(" ")
+    lineSplitted = filterEmptyString(lineSplitted)
+    puzzleDict = {}
+    if (len(lineSplitted) != puzzleSize):
+        print("ERROR: Every row must contain PUZZLE_SIZE integers.")
+        sys.exit()
+    for x in range(0, puzzleSize):
+        try:
+            cellValue = int(lineSplitted[x])
+            if (cellValue < 0 or cellValue > puzzleSize**2 - 1):
+                print("ERROR: Integers values must be in range 0 to (PUZZLE_SIZE^2 - 1).")
+                sys.exit()
+            if (cellValue in puzzleDict.keys()):
+                print("ERROR: Cell value duplicate.")
+                sys.exit()
+            else:
+                puzzleDict[cellValue] = True
+            lineArray.append(cellValue)
+        except ValueError:
+            print("ERROR: Each lines must contain (PUZZLE_SIZE^2 - 1) unique integers .")
+            sys.exit()
+    return lineArray
+
 
 def getPuzzleSize():
     puzzleSize = 0
