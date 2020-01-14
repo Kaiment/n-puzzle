@@ -9,10 +9,14 @@ class Puzzle:
         self.size = len(puzzle)
         self.goal = goal
         self.g = g
-        self.h = heuristic.manhattanDistance(self.puzzle, self.goal)
-        self.f = g + self.h
+        self.h = 0
+        self.f = 0
         self.parent = None
         self.neighbours = []
+
+    def compute(self):
+        self.h = heuristic.linearConflicts(self.puzzle, self.goal)
+        self.f = self.g + self.h
 
     def getNeighbours(self):
         for i in range(0, self.size):

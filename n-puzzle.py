@@ -14,8 +14,7 @@ def main():
     print("Puzzle size: " + str(puzzleSize))
     print("Initial state:")
 
-    # for i, line in enumerate(sys.stdin):
-    #     puzzle[i] = list(map(int, parser.filterCommentFromLine(line).split()))
+    puzzle = parser.getPuzzle(puzzleSize)
 
     helpers.debugPuzzle(puzzle)
 
@@ -28,7 +27,7 @@ def main():
 
     helpers.debugPuzzle(finalState)
 
-    solver.startSolving(puzzle, finalState)
+    solver.aStar(puzzle, finalState)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='N-puzzle solver using A* algorithm')

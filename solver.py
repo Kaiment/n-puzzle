@@ -54,7 +54,6 @@ def isSolvable(puzzle):
             if j > i and numbers[i] > numbers[j]:
                 inversions += 1
 
-    # even => not solvable
     if size % 2 == 0:
         i = heuristic.getCoordinate(puzzle, 0, 'x')
         if inversions % 2 == 0 and i % 2 == 0:
@@ -65,35 +64,90 @@ def isSolvable(puzzle):
         return True
     return False
 
-# maybe we could try to order our stack when we push into it...
+# maybe we could try to order our stack when we push into it to improve solving time...
 def getBestNode(stack):
     best = stack[0]
+
     for node in stack:
-        if node.h < best.h:
+        if node.f < best.f:
             best = node
     return best
 
-def startSolving(initialState, goalState):
+def openedWithLowerCost(node, opened):
+    for op in opened:
+        if op.puzzle == node.puzzle and op.g < node.g:
+            return True
+    return False
+
+
+
+
+def idaStar(initialState, goalState):
+    current = puzzle.Puzzle(initialState, goalState, 0)
+    current.compute()
+    threshold = current.h
+
+    while True:
+        res = idaSearch(current, goalState, 0, threshold)
+        if res == 0:
+            helpers.exit()
+        if res > sys.maxsize:
+            helpers.exit("no solution found")
+        threshold = res
+
+def idaSearch(current, goalState, g, threshold):
+    current.compute()
+
+    if current.f > threshold:
+        return current.f
+    if current.h == 0:
+        traceRoute(current)
+        return 0
+    min = sys.maxsize
+    for n in current.getNeighbours():
+        neighbour = puzzle.Puzzle(n, goalState, g + 1)
+        neighbour.parent = current
+        res = idaSearch(neighbour, goalState, g + 1, threshold)
+        if res == 0:
+            traceRoute(neighbour)
+            return 0
+        if res < min:
+            min = res
+    return min
+
+
+
+def isClosed(node, closed):
+    for c in closed:
+        if c.puzzle == node.puzzle and c.g == node.g:
+            return True
+    return False
+
+def aStar(initialState, goalState):
     opened = []
     closed = []
 
     current = puzzle.Puzzle(initialState, goalState, 0)
+    current.compute()
     opened.append(current)
+
+    h = current.h
 
     while len(opened) > 0:
         current = getBestNode(opened)
 
-        if current.puzzle == goalState:
+        if current.h == 0:
             traceRoute(current)
         opened.remove(current)
         for n in current.getNeighbours():
             neighbour = puzzle.Puzzle(n, goalState, current.g + 1)
+            neighbour.compute()
             neighbour.parent = current
 
-            if neighbour.puzzle in closed: # or in opened with lower cost ?
+            if isClosed(neighbour, closed) or openedWithLowerCost(neighbour, opened) == True:
                 continue
             opened.append(neighbour)
-        closed.append(current.puzzle)
+        closed.append(current)
     helpers.exit("no solution found")
 
 def traceRoute(node):
