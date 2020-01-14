@@ -10,9 +10,6 @@ def main():
 
     puzzle = parser.getPuzzle(puzzleSize)
 
-    # for i, line in enumerate(sys.stdin):
-    #     puzzle[i] = list(map(int, parser.filterCommentFromLine(line).split()))
-
     helpers.debugPuzzle(puzzle)
 
     if solver.isSolvable(puzzle) == False:
@@ -24,7 +21,7 @@ def main():
 
     helpers.debugPuzzle(finalState)
 
-    solver.startSolving(puzzle, finalState)
+    solver.aStar(puzzle, finalState)
 
 if __name__ == "__main__":
     main()
