@@ -1,18 +1,18 @@
 import sys
 import helpers
 import solver
-import parser
+import puzzleParser
 import argparse
 import heuristic
 
 usedHeuristic = heuristic.manhattanDistance
 
 def main():
-    puzzleSize = parser.getPuzzleSize()
+    puzzleSize = puzzleParser.getPuzzleSize()
+    puzzle = puzzleParser.getPuzzle(puzzleSize)
+
     print("Puzzle size: " + str(puzzleSize))
     print("Initial state:")
-
-    puzzle = parser.getPuzzle(puzzleSize)
 
     # for i, line in enumerate(sys.stdin):
     #     puzzle[i] = list(map(int, parser.filterCommentFromLine(line).split()))
