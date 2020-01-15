@@ -18,16 +18,14 @@ def main():
 
     helpers.debugPuzzle(puzzle)
 
-    if solver.isSolvable(puzzle) == False:
+    goal = solver.getFinalPuzzle(puzzleSize)
+    print("Goal state:")
+    helpers.debugPuzzle(goal)
+
+    if solver.isSolvable(puzzle, goal) == False:
         helpers.exit("Puzzle is not solvable")
 
-    finalState = solver.getFinalPuzzle(puzzleSize)
-
-    print("Goal state:")
-
-    helpers.debugPuzzle(finalState)
-
-    solver.aStar(puzzle, finalState)
+    solver.idaStar(puzzle, goal)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='N-puzzle solver using A* algorithm')
