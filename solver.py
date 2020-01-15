@@ -36,31 +36,29 @@ def getFinalPuzzle(size):
 
     return puzzle
 
+def countInversions(puzzle, goal):
+    res = 0
+    for i in range(len(puzzle) - 1):
+        for j in range(i + 1, len(puzzle)):
+                ti = puzzle[i]
+                tj = puzzle[j]
+                if goal.index(ti) > goal.index(tj):
+                    res += 1
+    return res
+
 #see https://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
-def isSolvable(puzzle):
+def isSolvable(puzzle, goal):
     size = len(puzzle)
-    numbers = [0] * ((size * size) - 1)
-    k = 0
-    inversions = 0
+    puzzle = [item for sublist in puzzle for item in sublist]
+    goal = [item for sublist in goal for item in sublist]
 
-    for i in range(0, size):
-        for j in range(0, size):
-            if puzzle[i][j] != 0:
-                numbers[k] = puzzle[i][j]
-                k += 1
-
-    for i in range(0, len(numbers)):
-        for j in range(0, len(numbers)):
-            if j > i and numbers[i] > numbers[j]:
-                inversions += 1
-
-    if size % 2 == 0:
-        i = heuristic.getCoordinate(puzzle, 0, 'x')
-        if inversions % 2 == 0 and i % 2 == 0:
-            return True
-        elif inversions % 2 == 1 and i % 2 == 1:
-            return True
-    elif inversions % 2 == 1:
+    inversions = countInversions(puzzle, goal)
+    puzzleZR = puzzle.index(0) // size
+    puzzleZC = puzzle.index(0) % size
+    goalZR = goal.index(0) // size
+    goalZC = goal.index(0) % size
+    dist = abs(puzzleZR - goalZR) + abs(puzzleZC - goalZC)
+    if (dist % 2 == 0 and inversions % 2 == 0) or (dist % 2 == 1 and inversions % 2 == 1):
         return True
     return False
 
@@ -78,9 +76,6 @@ def openedWithLowerCost(node, opened):
         if op.puzzle == node.puzzle and op.g < node.g:
             return True
     return False
-
-
-
 
 def idaStar(initialState, goalState):
     current = puzzle.Puzzle(initialState, goalState, 0)
@@ -114,8 +109,6 @@ def idaSearch(current, goalState, g, threshold):
         if res < min:
             min = res
     return min
-
-
 
 def isClosed(node, closed):
     for c in closed:
