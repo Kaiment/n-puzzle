@@ -148,6 +148,7 @@ def isClosed(node, closed):
 def aStar(initialState, goalState):
     opened = []
     closed = []
+    #closed = set() # with set
 
     current = puzzle.Puzzle(arguments, initialState, goalState, 0)
     current.compute()
@@ -167,10 +168,20 @@ def aStar(initialState, goalState):
             neighbour.parent = current
 
             if isClosed(neighbour, closed) or openedWithLowerCost(neighbour, opened) == True:
+            if neighbour.puzzle in closed: # or in opened with lower cost ?
+            #if hashPuzzle(neighbour.puzzle) in closed: #with set
                 continue
             opened.append(neighbour)
         closed.append(current)
+        #closed.add(hashPuzzle(current.puzzle)) # with set
+        closed.append(current.puzzle)
     helpers.exit("no solution found")
+
+def hashPuzzle(puzzle):
+    hashValue = ""
+    for row in puzzle:
+        hashValue += "".join(map(str, row))
+    return hashValue
 
 def traceRoute(node):
     endTime = time.time()

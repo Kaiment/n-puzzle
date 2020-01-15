@@ -3,21 +3,21 @@ import helpers
 
 def getPuzzle(puzzleSize):
     puzzle = []
+    existingCells = set()
     for line in sys.stdin:
         line = filterCommentFromLine(line)
         if (line != ""):
-            lineArray = getLineArray(line, puzzleSize)
+            lineArray = getLineArray(line, puzzleSize, existingCells)
             puzzle.append(lineArray)
     if (len(puzzle) != puzzleSize):
         print("ERROR: There must be exactly PUZZLE_SIZE rows of integers.")
         sys.exit()
     return puzzle
 
-def getLineArray(line, puzzleSize):
+def getLineArray(line, puzzleSize, existingCells):
     lineArray = []
     lineSplitted = line.split(" ")
     lineSplitted = filterEmptyString(lineSplitted)
-    puzzleDict = {}
     if (len(lineSplitted) != puzzleSize):
         print("ERROR: Every row must contain PUZZLE_SIZE integers.")
         sys.exit()
@@ -27,11 +27,11 @@ def getLineArray(line, puzzleSize):
             if (cellValue < 0 or cellValue > puzzleSize**2 - 1):
                 print("ERROR: Integers values must be in range 0 to (PUZZLE_SIZE^2 - 1).")
                 sys.exit()
-            if (cellValue in puzzleDict.keys()):
+            if (cellValue in existingCells):
                 print("ERROR: Cell value duplicate.")
                 sys.exit()
             else:
-                puzzleDict[cellValue] = True
+                existingCells.add(cellValue)
             lineArray.append(cellValue)
         except ValueError:
             print("ERROR: Each lines must contain (PUZZLE_SIZE^2 - 1) unique integers .")
