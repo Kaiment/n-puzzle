@@ -4,18 +4,25 @@ import heuristic
 import helpers
 
 class Puzzle:
-    def __init__(self, puzzle, goal, g):
+    def __init__(self, heur, puzzle, goal, g):
         self.puzzle = puzzle
         self.size = len(puzzle)
         self.goal = goal
         self.g = g
         self.h = 0
         self.f = 0
+        self.heuristic = heur
         self.parent = None
         self.neighbours = []
 
     def compute(self):
-        self.h = heuristic.linearConflicts(self.puzzle, self.goal)
+        if self.heuristic == 'linearConflicts':
+            self.h = heuristic.linearConflicts(self.puzzle, self.goal)
+        elif self.heuristic == 'misplacedTiles':
+            self.h = heuristic.misplacedTiles(self.puzzle, self.goal)
+        else:
+            self.h = heuristic.manatthanDistance(self.puzzle, self.goal)
+
         self.f = self.g + self.h
 
     def getNeighbours(self):

@@ -62,23 +62,17 @@ def isSolvable(puzzle, goal):
         return True
     return False
 
-# maybe we could try to order our stack when we push into it to improve solving time...
-def getBestNode(stack):
-    best = stack[0]
+def solve(args, initialState, goalState):
+    global arguments
+    arguments = args
 
-    for node in stack:
-        if node.f < best.f:
-            best = node
-    return best
-
-def openedWithLowerCost(node, opened):
-    for op in opened:
-        if op.puzzle == node.puzzle and op.g < node.g:
-            return True
-    return False
+    if args.algorithm == 'a':
+        aStar(initialState, goalState)
+    else:
+        idaStar(initialState, goalState)
 
 def idaStar(initialState, goalState):
-    current = puzzle.Puzzle(initialState, goalState, 0)
+    current = puzzle.Puzzle(arguments.heuristic, initialState, goalState, 0)
     current.compute()
     threshold = current.h
 
@@ -100,7 +94,7 @@ def idaSearch(current, goalState, g, threshold):
         return 0
     min = sys.maxsize
     for n in current.getNeighbours():
-        neighbour = puzzle.Puzzle(n, goalState, g + 1)
+        neighbour = puzzle.Puzzle(arguments.heuristic, n, goalState, g + 1)
         neighbour.parent = current
         res = idaSearch(neighbour, goalState, g + 1, threshold)
         if res == 0:
@@ -109,6 +103,21 @@ def idaSearch(current, goalState, g, threshold):
         if res < min:
             min = res
     return min
+
+# maybe we could try to order our stack when we push into it to improve solving time...
+def getBestNode(stack):
+    best = stack[0]
+
+    for node in stack:
+        if node.f < best.f:
+            best = node
+    return best
+
+def openedWithLowerCost(node, opened):
+    for op in opened:
+        if op.puzzle == node.puzzle and op.g < node.g:
+            return True
+    return False
 
 def isClosed(node, closed):
     for c in closed:
@@ -120,7 +129,7 @@ def aStar(initialState, goalState):
     opened = []
     closed = []
 
-    current = puzzle.Puzzle(initialState, goalState, 0)
+    current = puzzle.Puzzle(arguments.heuristic, initialState, goalState, 0)
     current.compute()
     opened.append(current)
 
@@ -133,7 +142,7 @@ def aStar(initialState, goalState):
             traceRoute(current)
         opened.remove(current)
         for n in current.getNeighbours():
-            neighbour = puzzle.Puzzle(n, goalState, current.g + 1)
+            neighbour = puzzle.Puzzle(arguments.heuristic, n, goalState, current.g + 1)
             neighbour.compute()
             neighbour.parent = current
 
