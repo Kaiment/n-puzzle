@@ -9,6 +9,7 @@ def getPuzzle(puzzleSize):
         if (line != ""):
             lineArray = getLineArray(line, puzzleSize, existingCells)
             puzzle.append(lineArray)
+    print(puzzle)
     if (len(puzzle) != puzzleSize):
         print("ERROR: There must be exactly PUZZLE_SIZE rows of integers.")
         sys.exit()

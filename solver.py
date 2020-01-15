@@ -97,7 +97,7 @@ def idaStar(initialState, goalState):
     while True:
         res = idaSearch(current, goalState, 0, threshold)
         if res == 0:
-            helpers.exit()
+            helpers.exit("")
         if res > sys.maxsize:
             helpers.exit("no solution found")
         threshold = res
@@ -124,15 +124,6 @@ def idaSearch(current, goalState, g, threshold):
             min = res
     return min
 
-# maybe we could try to order our stack when we push into it to improve solving time...
-def getBestNode(stack):
-    best = stack[0]
-
-    for node in stack:
-        if node.f < best.f:
-            best = node
-    return best
-
 def openedWithLowerCost(node, opened):
     for op in opened:
         if op.puzzle == node.puzzle and op.g < node.g:
@@ -147,8 +138,8 @@ def isClosed(node, closed):
 
 def aStar(initialState, goalState):
     opened = []
-    closed = []
-    #closed = set() # with set
+    # closed = []
+    closed = set() # with set
 
     current = puzzle.Puzzle(arguments, initialState, goalState, 0)
     current.compute()
@@ -167,20 +158,18 @@ def aStar(initialState, goalState):
             neighbour.compute()
             neighbour.parent = current
 
-            if isClosed(neighbour, closed) or openedWithLowerCost(neighbour, opened) == True:
-            if neighbour.puzzle in closed: # or in opened with lower cost ?
-            #if hashPuzzle(neighbour.puzzle) in closed: #with set
+            if hashPuzzle(neighbour.puzzle, neighbour.f) in closed or openedWithLowerCost(neighbour, opened):
                 continue
             opened.append(neighbour)
-        closed.append(current)
-        #closed.add(hashPuzzle(current.puzzle)) # with set
-        closed.append(current.puzzle)
+
+        closed.add(hashPuzzle(current.puzzle, current.f))
     helpers.exit("no solution found")
 
-def hashPuzzle(puzzle):
+def hashPuzzle(puzzle, f):
     hashValue = ""
     for row in puzzle:
         hashValue += "".join(map(str, row))
+    hashValue += str(f)
     return hashValue
 
 def traceRoute(node):
