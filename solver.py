@@ -1,4 +1,5 @@
 import sys
+import time
 
 import helpers
 import heuristic
@@ -64,7 +65,9 @@ def isSolvable(puzzle, goal):
 
 def solve(args, initialState, goalState):
     global arguments
+    global startTime
     arguments = args
+    startTime = time.time()
 
     if args.algorithm == 'a':
         aStar(initialState, goalState)
@@ -153,8 +156,11 @@ def aStar(initialState, goalState):
     helpers.exit("no solution found")
 
 def traceRoute(node):
+    endTime = time.time()
+    timeElapsed = endTime - startTime
+
     final = []
-    print("\nA solution has been found in "+str(node.g)+" move(s)")
+    print("\nA solution has been found in "+str(node.g)+" move(s) and "+str(round(timeElapsed, 3))+" s")
 
     while node != None:
         final.append(node)

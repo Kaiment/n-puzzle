@@ -21,7 +21,7 @@ class Puzzle:
         elif self.heuristic == 'misplacedTiles':
             self.h = heuristic.misplacedTiles(self.puzzle, self.goal)
         else:
-            self.h = heuristic.manatthanDistance(self.puzzle, self.goal)
+            self.h = heuristic.manhattanDistance(self.puzzle, self.goal)
 
         self.f = self.g + self.h
 
