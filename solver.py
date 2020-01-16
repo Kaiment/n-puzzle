@@ -5,10 +5,20 @@ import helpers
 import heuristic
 import puzzle
 
-def getFinalPuzzle(size):
-    if not isinstance(size, int) or size < 2:
-        return None
+def fillFinalPuzzle(size):
+    puzzle = [0] * size
+    k = 1
 
+    for x in range(size):
+        puzzle[x] = [0] * size
+        for y in range(size):
+            puzzle[x][y] = k
+            k += 1
+
+    puzzle[x][y] = 0
+    return puzzle
+
+def snakeFinalPuzzle(size):
     puzzle = [0] * size
     i = 0
     j = 0
@@ -37,6 +47,11 @@ def getFinalPuzzle(size):
 
     return puzzle
 
+def getFinalPuzzle(size, type):
+    if type == 'fill':
+        return fillFinalPuzzle(size)
+    return snakeFinalPuzzle(size)
+
 def countInversions(puzzle, goal):
     res = 0
     for i in range(len(puzzle) - 1):
@@ -48,7 +63,7 @@ def countInversions(puzzle, goal):
     return res
 
 #see https://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
-def isSolvable(puzzle, goal):
+def isSolvable(puzzle, goal, arg):
     size = len(puzzle)
     puzzle = [item for sublist in puzzle for item in sublist]
     goal = [item for sublist in goal for item in sublist]
