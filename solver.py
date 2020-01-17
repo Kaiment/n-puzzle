@@ -4,6 +4,7 @@ import time
 import helpers
 import heuristic
 import puzzle
+import IndexedPriorityQueue
 
 def fillFinalPuzzle(size):
     puzzle = [0] * size
@@ -89,6 +90,13 @@ def solve(args, initialState, goalState):
     else:
         idaStar(initialState, goalState)
 
+def openedWithLowerCost(node, opened):
+    for op in opened:
+        if op.puzzle == node.puzzle and op.g < node.g:
+            return True
+    return False
+
+
 def idaStar(initialState, goalState):
     current = puzzle.Puzzle(arguments, initialState, goalState, 0)
     current.compute()
@@ -137,39 +145,47 @@ def isClosed(node, closed):
     return False
 
 def aStar(initialState, goalState):
-    opened = []
-    # closed = []
+    #opened = []
     closed = set() # with set
+    openedIPQ = IndexedPriorityQueue.IndexedPriorityQueue()
 
-    current = puzzle.Puzzle(arguments, initialState, goalState, 0)
-    current.compute()
-    opened.append(current)
+    currentIPQ = puzzle.Puzzle(initialState, goalState, 0)
+    currentIPQ.compute()
+    #opened.append(current)
 
-    h = current.h
+    # test IPQ
+    openedIPQ.append(currentIPQ)
 
-    while len(opened) > 0:
-        current = getBestNode(opened)
+    while len(openedIPQ.opened) > 0:
+        #current = getBestNode(opened)
 
-        if current.puzzle == goalState:
-            traceRoute(current)
-        opened.remove(current)
-        for n in current.getNeighbours():
-            neighbour = puzzle.Puzzle(arguments, n, goalState, current.g + 1)
+        #print(openedIPQ)
+        currentIPQ = openedIPQ.pop()
+        if currentIPQ.h == 0:
+            traceRoute(currentIPQ)
+        #opened.remove(current)
+        for n in currentIPQ.getNeighbours():
+            neighbour = puzzle.Puzzle(n, goalState, currentIPQ.g + 1)
             neighbour.compute()
-            neighbour.parent = current
+            neighbour.parent = currentIPQ
 
-            if hashPuzzle(neighbour.puzzle, neighbour.f) in closed or openedWithLowerCost(neighbour, opened):
+            if hashPuzzle(neighbour.puzzle, neighbour.g) in closed or openedWithLowerCost(neighbour, openedIPQ.opened):
                 continue
-            opened.append(neighbour)
+            openedIPQ.append(neighbour)
 
-        closed.add(hashPuzzle(current.puzzle, current.f))
+            # IPQ TEST
+            openedIPQ.append(neighbour)
+
+        closed.add(hashPuzzle(currentIPQ.puzzle, currentIPQ.g))
+
+
     helpers.exit("no solution found")
 
-def hashPuzzle(puzzle, f):
+def hashPuzzle(puzzle, g):
     hashValue = ""
     for row in puzzle:
         hashValue += "".join(map(str, row))
-    hashValue += str(f)
+    hashValue += str(g)
     return hashValue
 
 def traceRoute(node):
