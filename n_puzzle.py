@@ -28,8 +28,12 @@ if __name__ == "__main__":
 
     argsParser.add_argument('-a', '--algorithm', action='store', choices=['a', 'ida'], help='Specify the algorithm to solve the puzzle between A* and IDA*')
     argsParser.add_argument('--heuristic', action='store', choices=['misplacedTiles', 'manhattan', 'linearConflicts'], help='Specify the heuristic used')
+    argsParser.add_argument('-s', '--search', action='store', choices=['heuristic', 'greedy', 'uniform'], help='Specify the searching logic')
     argsParser.add_argument('-g', '--goal', action='store', choices=['fill', 'snake'], help='Specify the goal state')
 
     args = argsParser.parse_args()
+
+    if args.algorithm == 'ida' and args.search == 'greedy':
+        helpers.exit('IDA* algorithm is not suported with greedy search')
 
     main(args)
