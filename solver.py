@@ -90,9 +90,9 @@ def solve(args, initialState, goalState):
         idaStar(initialState, goalState)
 
 def idaStar(initialState, goalState):
-    current = puzzle.Puzzle(arguments.heuristic, initialState, goalState, 0)
+    current = puzzle.Puzzle(arguments, initialState, goalState, 0)
     current.compute()
-    threshold = current.h
+    threshold = current.f
 
     while True:
         res = idaSearch(current, goalState, 0, threshold)
@@ -105,14 +105,16 @@ def idaStar(initialState, goalState):
 def idaSearch(current, goalState, g, threshold):
     current.compute()
 
+    current.print()
+
     if current.f > threshold:
         return current.f
-    if current.h == 0:
+    if current.puzzle == goalState:
         traceRoute(current)
         return 0
     min = sys.maxsize
     for n in current.getNeighbours():
-        neighbour = puzzle.Puzzle(arguments.heuristic, n, goalState, g + 1)
+        neighbour = puzzle.Puzzle(arguments, n, goalState, g + 1)
         neighbour.parent = current
         res = idaSearch(neighbour, goalState, g + 1, threshold)
         if res == 0:
@@ -139,7 +141,7 @@ def openedWithLowerCost(node, opened):
 
 def isClosed(node, closed):
     for c in closed:
-        if c.puzzle == node.puzzle and c.g == node.g:
+        if c.puzzle == node.puzzle and c.f == node.f:
             return True
     return False
 
@@ -147,7 +149,7 @@ def aStar(initialState, goalState):
     opened = []
     closed = []
 
-    current = puzzle.Puzzle(arguments.heuristic, initialState, goalState, 0)
+    current = puzzle.Puzzle(arguments, initialState, goalState, 0)
     current.compute()
     opened.append(current)
 
@@ -156,11 +158,11 @@ def aStar(initialState, goalState):
     while len(opened) > 0:
         current = getBestNode(opened)
 
-        if current.h == 0:
+        if current.puzzle == goalState:
             traceRoute(current)
         opened.remove(current)
         for n in current.getNeighbours():
-            neighbour = puzzle.Puzzle(arguments.heuristic, n, goalState, current.g + 1)
+            neighbour = puzzle.Puzzle(arguments, n, goalState, current.g + 1)
             neighbour.compute()
             neighbour.parent = current
 
