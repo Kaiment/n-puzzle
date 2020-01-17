@@ -35,6 +35,7 @@ class IndexedPriorityQueue:
 
     def append(self, puzzle):
         insertionIndex = self.getInsertionIndex(puzzle.f)
+        self.updateMaxSameTimeOpened()
         if insertionIndex == self.getOpenedLength():
             self.opened.append(puzzle)
             #print("append "+str(puzzle.f)+" at the end")
@@ -64,6 +65,17 @@ class IndexedPriorityQueue:
         for idxF in self.indexDict:
             if idxF > f:
                 self.indexDict[idxF].insertIndex -= 1
+
+    def updateMaxSameTimeOpened(self):
+        nbOpened = self.getNbOpened()
+        if nbOpened > self.maxSameTimeOpened:
+            self.maxSameTimeOpened = nbOpened
+
+    def getNbOpened(self):
+        nbOpened = 0
+        for op in self.indexDict:
+            nbOpened += self.indexDict[op].count
+        return nbOpened
 
     def gotOpenedWithLowerCost(self):
         return 0
