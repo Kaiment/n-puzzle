@@ -16,6 +16,13 @@ class Puzzle:
         self.parent = None
         self.neighbours = []
 
+    def __repr__(self):
+        string = '\ng: '+str(self.g)+', h: '+str(self.h)+', f: '+str(self.f)+'\n'
+        for row in self.puzzle:
+            string += str(row)+'\n'
+        return string
+
+
     def compute(self):
         if self.searchType == 'uniform':
             self.f = self.g

@@ -4,6 +4,7 @@ import time
 import helpers
 import heuristic
 import puzzle
+import IndexedPriorityQueue
 
 def fillFinalPuzzle(size):
     puzzle = [0] * size
@@ -89,6 +90,12 @@ def solve(args, initialState, goalState):
     else:
         idaStar(initialState, goalState)
 
+# def openedWithLowerCost(node, opened):
+#     for op in opened:
+#         if op.puzzle == node.puzzle and op.g < node.g:
+#             return True
+#     return False
+
 def idaStar(initialState, goalState):
     current = puzzle.Puzzle(arguments, initialState, goalState, 0)
     current.compute()
@@ -97,7 +104,7 @@ def idaStar(initialState, goalState):
     while True:
         res = idaSearch(current, goalState, 0, threshold)
         if res == 0:
-            helpers.exit()
+            helpers.exit("")
         if res > sys.maxsize:
             helpers.exit("no solution found")
         threshold = res
@@ -105,7 +112,7 @@ def idaStar(initialState, goalState):
 def idaSearch(current, goalState, g, threshold):
     current.compute()
 
-    current.print()
+    #current.print()
 
     if current.f > threshold:
         return current.f
@@ -124,61 +131,47 @@ def idaSearch(current, goalState, g, threshold):
             min = res
     return min
 
-# maybe we could try to order our stack when we push into it to improve solving time...
-def getBestNode(stack):
-    best = stack[0]
-
-    for node in stack:
-        if node.f < best.f:
-            best = node
-    return best
-
-def openedWithLowerCost(node, opened):
-    for op in opened:
-        if op.puzzle == node.puzzle and op.g < node.g:
-            return True
-    return False
-
-def isClosed(node, closed):
-    for c in closed:
-        if c.puzzle == node.puzzle and c.f == node.f:
-            return True
-    return False
-
 def aStar(initialState, goalState):
-    opened = []
-    closed = []
+    closed = set()
+    openedIPQ = IndexedPriorityQueue.IndexedPriorityQueue()
 
-    current = puzzle.Puzzle(arguments, initialState, goalState, 0)
-    current.compute()
-    opened.append(current)
+    currentIPQ = puzzle.Puzzle(arguments, initialState, goalState, 0)
+    currentIPQ.compute()
+    openedIPQ.append(currentIPQ)
 
-    h = current.h
-
-    while len(opened) > 0:
-        current = getBestNode(opened)
-
-        if current.puzzle == goalState:
-            traceRoute(current)
-        opened.remove(current)
-        for n in current.getNeighbours():
-            neighbour = puzzle.Puzzle(arguments, n, goalState, current.g + 1)
+    while len(openedIPQ.opened) > 0:
+        currentIPQ = openedIPQ.pop()
+        if currentIPQ.h == 0:
+            traceRoute(currentIPQ, openedIPQ.allTimeOpened, openedIPQ.maxSameTimeOpened)
+        for n in currentIPQ.getNeighbours():
+            neighbour = puzzle.Puzzle(arguments, n, goalState, currentIPQ.g + 1)
             neighbour.compute()
-            neighbour.parent = current
+            neighbour.parent = currentIPQ
 
-            if isClosed(neighbour, closed) or openedWithLowerCost(neighbour, opened) == True:
+            if hashPuzzle(neighbour.puzzle, neighbour.g) in closed or openedIPQ.gotOpenedWithLowerCost(neighbour): #openedWithLowerCost(neighbour, openedIPQ.opened):
                 continue
-            opened.append(neighbour)
-        closed.append(current)
+            openedIPQ.append(neighbour)
+
+        closed.add(hashPuzzle(currentIPQ.puzzle, currentIPQ.g))
+
     helpers.exit("no solution found")
 
-def traceRoute(node):
+def hashPuzzle(puzzle, g):
+    hashValue = ""
+    for row in puzzle:
+        hashValue += "".join(map(str, row))
+    hashValue += str(g)
+    return hashValue
+
+def traceRoute(node, complexityTime = -1, complexitySpace = -1):
     endTime = time.time()
     timeElapsed = endTime - startTime
 
     final = []
-    print("\nA solution has been found in "+str(node.g)+" move(s) and "+str(round(timeElapsed, 3))+" s")
-
+    print("\nA solution has been found in "+str(node.g)+" move(s) and "+str(round(timeElapsed, 3))+"s.")
+    if (complexityTime != -1 and complexitySpace != -1):
+        print("Complexity in time: "+str(complexityTime)+" opened states in total.")
+        print("Complexity in size: "+str(complexitySpace)+" maximum opened states at once.\n")
     while node != None:
         final.append(node)
         node = node.parent
