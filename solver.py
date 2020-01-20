@@ -136,7 +136,7 @@ def aStar(initialState, goalState):
     closed = set()
     openedIPQ = IndexedPriorityQueue.IndexedPriorityQueue()
 
-    currentIPQ = puzzle.Puzzle(arguments.heuristic, initialState, goalState, 0)
+    currentIPQ = puzzle.Puzzle(arguments, initialState, goalState, 0)
     currentIPQ.compute()
     openedIPQ.append(currentIPQ)
 
@@ -145,7 +145,7 @@ def aStar(initialState, goalState):
         if currentIPQ.h == 0:
             traceRoute(currentIPQ, openedIPQ.allTimeOpened, openedIPQ.maxSameTimeOpened)
         for n in currentIPQ.getNeighbours():
-            neighbour = puzzle.Puzzle(arguments.heuristic, n, goalState, currentIPQ.g + 1)
+            neighbour = puzzle.Puzzle(arguments, n, goalState, currentIPQ.g + 1)
             neighbour.compute()
             neighbour.parent = currentIPQ
 
