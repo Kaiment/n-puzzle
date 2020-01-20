@@ -90,12 +90,11 @@ def solve(args, initialState, goalState):
     else:
         idaStar(initialState, goalState)
 
-def openedWithLowerCost(node, opened):
-    for op in opened:
-        if op.puzzle == node.puzzle and op.g < node.g:
-            return True
-    return False
-
+# def openedWithLowerCost(node, opened):
+#     for op in opened:
+#         if op.puzzle == node.puzzle and op.g < node.g:
+#             return True
+#     return False
 
 def idaStar(initialState, goalState):
     current = puzzle.Puzzle(arguments, initialState, goalState, 0)
@@ -113,7 +112,7 @@ def idaStar(initialState, goalState):
 def idaSearch(current, goalState, g, threshold):
     current.compute()
 
-    current.print()
+    #current.print()
 
     if current.f > threshold:
         return current.f
@@ -149,7 +148,7 @@ def aStar(initialState, goalState):
             neighbour.compute()
             neighbour.parent = currentIPQ
 
-            if hashPuzzle(neighbour.puzzle, neighbour.g) in closed or openedWithLowerCost(neighbour, openedIPQ.opened):
+            if hashPuzzle(neighbour.puzzle, neighbour.g) in closed or openedIPQ.gotOpenedWithLowerCost(neighbour): #openedWithLowerCost(neighbour, openedIPQ.opened):
                 continue
             openedIPQ.append(neighbour)
 

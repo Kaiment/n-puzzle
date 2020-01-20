@@ -9,6 +9,7 @@ class Index:
 class IndexedPriorityQueue:
     def __init__(self):
         self.indexDict = {}
+        self.openedDict = {}
         self.opened = []
         self.allTimeOpened = 0
         self.maxSameTimeOpened = 0
@@ -42,19 +43,39 @@ class IndexedPriorityQueue:
         else:
             self.opened.insert(insertionIndex, puzzle)
             #print("append "+str(puzzle.f)+" at index "+str(insertionIndex))
+        self.appendOpenedDict(puzzle)
         self.indexDict[puzzle.f].count += 1
         self.incrementIndexOfGreaterF(puzzle.f)
         self.allTimeOpened += 1
         return 0
 
+    def appendOpenedDict(self, puzzle):
+        if puzzle.g in self.openedDict:
+            self.openedDict[puzzle.g].add(self.hashPuzzle(puzzle.puzzle))
+        else:
+            self.openedDict[puzzle.g] = set([self.hashPuzzle(puzzle.puzzle)])
+
+    def hashPuzzle(self, puzzle):
+        hashValue = ""
+        for row in puzzle:
+            hashValue += "".join(map(str, row))
+        return hashValue
+
     def pop(self):
         puzzle = self.opened.pop(0)
+        self.popOpenedDict(puzzle)
         #print("popped "+str(puzzle.f)+" at index 0")
         self.indexDict[puzzle.f].count -= 1
         if self.indexDict[puzzle.f].count < 1:
             del self.indexDict[puzzle.f]
         self.decrementIndexOfGreaterF(puzzle.f)
         return puzzle
+
+    def popOpenedDict(self, puzzle):
+        if puzzle.g in self.openedDict:
+            self.openedDict[puzzle.g].remove(self.hashPuzzle(puzzle.puzzle))
+            if len(self.openedDict) < 1:
+                del self.openedDict[puzzle.g]
         
     def incrementIndexOfGreaterF(self, f):
         for idxF in self.indexDict:
@@ -77,6 +98,10 @@ class IndexedPriorityQueue:
             nbOpened += self.indexDict[op].count
         return nbOpened
 
-    def gotOpenedWithLowerCost(self):
-        return 0
-    
+    def gotOpenedWithLowerCost(self, puzzle):
+        puzzleHash = self.hashPuzzle(puzzle.puzzle)
+        for p in self.openedDict:
+            if p <= puzzle.g:
+                if puzzleHash in self.openedDict[p]:
+                    return True
+        return False
