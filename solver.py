@@ -85,16 +85,10 @@ def solve(args, initialState, goalState):
     arguments = args
     startTime = time.time()
 
-    if args.algorithm == 'a':
-        aStar(initialState, goalState)
-    else:
+    if args.algorithm == 'ida':
         idaStar(initialState, goalState)
-
-# def openedWithLowerCost(node, opened):
-#     for op in opened:
-#         if op.puzzle == node.puzzle and op.g < node.g:
-#             return True
-#     return False
+    else:
+        aStar(initialState, goalState)
 
 def idaStar(initialState, goalState):
     current = puzzle.Puzzle(arguments, initialState, goalState, 0)
@@ -111,8 +105,6 @@ def idaStar(initialState, goalState):
 
 def idaSearch(current, goalState, g, threshold):
     current.compute()
-
-    #current.print()
 
     if current.f > threshold:
         return current.f
@@ -131,6 +123,13 @@ def idaSearch(current, goalState, g, threshold):
             min = res
     return min
 
+def hasAtLeastOneElem(list):
+    try:
+        list[0]
+    except IndexError:
+        return False
+    return True
+
 def aStar(initialState, goalState):
     closed = set()
     openedIPQ = IndexedPriorityQueue.IndexedPriorityQueue()
@@ -139,20 +138,20 @@ def aStar(initialState, goalState):
     currentIPQ.compute()
     openedIPQ.append(currentIPQ)
 
-    while len(openedIPQ.opened) > 0:
+    while hasAtLeastOneElem(openedIPQ.opened):
         currentIPQ = openedIPQ.pop()
-        if currentIPQ.h == 0:
+        if currentIPQ.puzzle == goalState:
             traceRoute(currentIPQ, openedIPQ.allTimeOpened, openedIPQ.maxSameTimeOpened)
         for n in currentIPQ.getNeighbours():
             neighbour = puzzle.Puzzle(arguments, n, goalState, currentIPQ.g + 1)
             neighbour.compute()
             neighbour.parent = currentIPQ
 
-            if hashPuzzle(neighbour.puzzle, neighbour.g) in closed or openedIPQ.gotOpenedWithLowerCost(neighbour): #openedWithLowerCost(neighbour, openedIPQ.opened):
+            if hashPuzzle(neighbour.puzzle, neighbour.f) in closed or openedIPQ.gotOpenedWithLowerCost(neighbour):
                 continue
             openedIPQ.append(neighbour)
 
-        closed.add(hashPuzzle(currentIPQ.puzzle, currentIPQ.g))
+        closed.add(hashPuzzle(currentIPQ.puzzle, currentIPQ.f))
 
     helpers.exit("no solution found")
 
@@ -166,16 +165,19 @@ def hashPuzzle(puzzle, g):
 def traceRoute(node, complexityTime = -1, complexitySpace = -1):
     endTime = time.time()
     timeElapsed = endTime - startTime
+    el = node
 
     final = []
-    print("\nA solution has been found in "+str(node.g)+" move(s) and "+str(round(timeElapsed, 3))+"s.")
-    if (complexityTime != -1 and complexitySpace != -1):
-        print("Complexity in time: "+str(complexityTime)+" opened states in total.")
-        print("Complexity in size: "+str(complexitySpace)+" maximum opened states at once.\n")
     while node != None:
         final.append(node)
         node = node.parent
 
     while len(final):
         final.pop().print()
+
+    print("\nA solution has been found in "+str(el.g)+" move(s) and "+str(round(timeElapsed, 3))+"s.")
+    if (complexityTime != -1 and complexitySpace != -1):
+        print("Complexity in time: "+str(complexityTime)+" opened states in total.")
+        print("Complexity in size: "+str(complexitySpace)+" maximum opened states at once.")
+
     sys.exit()

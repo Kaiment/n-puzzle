@@ -100,8 +100,7 @@ class IndexedPriorityQueue:
 
     def gotOpenedWithLowerCost(self, puzzle):
         puzzleHash = self.hashPuzzle(puzzle.puzzle)
-        for p in self.openedDict:
-            if p <= puzzle.g:
-                if puzzleHash in self.openedDict[p]:
-                    return True
+        for g in self.openedDict:
+            if g <= puzzle.g and puzzleHash in self.openedDict[g]:
+                return True
         return False

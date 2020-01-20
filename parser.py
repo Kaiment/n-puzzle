@@ -54,8 +54,9 @@ def getPuzzleSize():
             print("ERROR: The puzzle size must be at least of 2")
             sys.exit()
         break
-    if (puzzleSize == None):
-        print("ERROR: You must enter a puzzle size.")
+    if (puzzleSize == None or puzzleSize == 0):
+        print("ERROR: You must enter a valid puzzle size.")
+        sys.exit()
     return puzzleSize
 
 def filterCommentFromLine(line):
